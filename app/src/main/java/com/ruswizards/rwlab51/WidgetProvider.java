@@ -12,9 +12,9 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiManager;
+import android.support.annotation.NonNull;
 import android.widget.RemoteViews;
 
 /**
@@ -32,7 +32,7 @@ public class WidgetProvider extends AppWidgetProvider {
      * @param intent intent
      */
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(@NonNull Context context, @NonNull Intent intent) {
         super.onReceive(context, intent);
         if (intent.getAction().equals(WifiManager.WIFI_STATE_CHANGED_ACTION) ||
                 intent.getAction().equals(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION) ||
@@ -57,8 +57,9 @@ public class WidgetProvider extends AppWidgetProvider {
         // Set up pending intent for sending it when wifi icon in widget clicked
         Intent intentActionSwitch = new Intent(context, WidgetProvider.class);
         intentActionSwitch.setAction(INTENT_SWITCH_WIFI);
-        PendingIntent pendingActionSwitch = PendingIntent.getBroadcast(context, 0, intentActionSwitch, 0);
-        remoteViewsWidget.setOnClickPendingIntent(R.id.imageViewStatus, pendingActionSwitch);
+        PendingIntent pendingActionSwitch = PendingIntent.getBroadcast(
+                context, 0, intentActionSwitch, 0);
+        remoteViewsWidget.setOnClickPendingIntent(R.id.image_view_wifi_status, pendingActionSwitch);
 
         // Change image resource and update widget instances
         changeImageView(remoteViewsWidget, context);
@@ -66,21 +67,19 @@ public class WidgetProvider extends AppWidgetProvider {
     }
 
     /**
-     * Checks wi-fi state and changes image in widget
+     * Checks wi-fi state and changes image resource in a widget (do not update widget instances)
      * @param remoteViewsWidget remoteViewsWidget
      * @param context context
      */
     private void changeImageView(RemoteViews remoteViewsWidget, Context context) {
         WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        ConnectivityManager connectivityManager = (ConnectivityManager)context.
-                getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo wifiInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         if (!wifiManager.isWifiEnabled()){
-            remoteViewsWidget.setImageViewResource(R.id.imageViewStatus, R.drawable.wifi_off);
-        } else if (wifiInfo.isConnected()){
-            remoteViewsWidget.setImageViewResource(R.id.imageViewStatus, R.drawable.wifi_connected);
+            remoteViewsWidget.setImageViewResource(R.id.image_view_wifi_status, R.drawable.wifi_off);
+        } else if (wifiManager.getConnectionInfo().getSupplicantState().equals(
+                SupplicantState.COMPLETED)){
+            remoteViewsWidget.setImageViewResource(R.id.image_view_wifi_status, R.drawable.wifi_connected);
         } else {
-            remoteViewsWidget.setImageViewResource(R.id.imageViewStatus, R.drawable.wifi_connecting);
+            remoteViewsWidget.setImageViewResource(R.id.image_view_wifi_status, R.drawable.wifi_connecting);
         }
     }
 }

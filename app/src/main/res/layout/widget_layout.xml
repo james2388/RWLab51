@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     android:background="@color/widget_background">
     <ImageView
-        android:id="@+id/imageViewStatus"
+        android:contentDescription="@string/widget_image_view_description"
+        android:id="@+id/image_view_wifi_status"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 </LinearLayout>
