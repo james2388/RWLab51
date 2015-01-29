@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">RWLab51</string>
+    <string name="widget_image_view_description">Status icon</string>
+    <color name="widget_background">#000000</color>
+
+</resources>
